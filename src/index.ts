@@ -105,6 +105,14 @@ export default {
 	fetch(request: Request, env: Env, ctx: ExecutionContext) {
 		const url = new URL(request.url);
 
+		if (url.pathname === "/") {
+			return Response.json({
+				message: "MCP server is running.",
+				sse: `${url.origin}/sse`,
+				mcp: `${url.origin}/mcp`,
+			});
+		}
+
 		if (url.pathname === "/sse" || url.pathname === "/sse/message") {
 			return PromptManager.serveSSE("/sse").fetch(request, env, ctx);
 		}
