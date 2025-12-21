@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import { Button } from "@openai/apps-sdk-ui/components/Button";
+// @ts-ignore - The types might not be perfectly resolved in this setup without deeper config
+import { Badge } from "@openai/apps-sdk-ui/components/Badge";
 
 const App: React.FC = () => {
   const prompts = window.openai.toolOutput?.prompts || [];
@@ -31,72 +34,66 @@ const App: React.FC = () => {
   };
 
   return (
-    <div style={{ fontFamily: 'system-ui, -apple-system, sans-serif', padding: '1rem', maxWidth: '600px', margin: '0 auto' }}>
-      <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>My Prompts</h1>
+    <div className="w-full max-w-2xl mx-auto p-4 font-sans text-primary">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="heading-lg">My Prompts</h1>
+        <Badge color="neutral">{prompts.length} items</Badge>
+      </div>
 
-      <form onSubmit={handleAdd} style={{ marginBottom: '2rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-        <input
-          type="text"
-          placeholder="Prompt Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' }}
-          disabled={isAdding}
-        />
-        <textarea
-          placeholder="Prompt Content"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', minHeight: '80px' }}
-          disabled={isAdding}
-        />
-        <button
-          type="submit"
-          disabled={isAdding || !title || !content}
-          style={{
-            padding: '0.5rem 1rem',
-            borderRadius: '4px',
-            border: 'none',
-            backgroundColor: '#10a37f',
-            color: 'white',
-            cursor: isAdding ? 'wait' : 'pointer',
-            fontWeight: 'bold'
-          }}
-        >
-          {isAdding ? 'Adding...' : 'Add Prompt'}
-        </button>
+      <form onSubmit={handleAdd} className="mb-8 p-4 rounded-2xl border border-default bg-surface shadow-sm flex flex-col gap-4">
+        <div>
+          <label className="block text-sm font-medium text-secondary mb-1">Title</label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full px-3 py-2 rounded-lg border border-default focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
+            placeholder="e.g., Email Rewrite"
+            disabled={isAdding}
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-secondary mb-1">Content</label>
+          <textarea
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            className="w-full px-3 py-2 rounded-lg border border-default focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors min-h-[100px]"
+            placeholder="Enter your prompt template..."
+            disabled={isAdding}
+          />
+        </div>
+        <div className="flex justify-end">
+          <Button
+            type="submit"
+            color="primary"
+            disabled={isAdding || !title || !content}
+          >
+            {isAdding ? 'Adding...' : 'Add Prompt'}
+          </Button>
+        </div>
       </form>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      <div className="grid gap-4">
         {prompts.length === 0 ? (
-          <p style={{ color: '#666', fontStyle: 'italic' }}>No prompts yet.</p>
+          <div className="text-center py-8 text-secondary italic">
+            No prompts found. Add one above!
+          </div>
         ) : (
           prompts.map((prompt) => (
-            <div key={prompt.id} style={{ border: '1px solid #eee', borderRadius: '8px', padding: '1rem', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: '600' }}>{prompt.title}</h3>
-                <button
+            <div key={prompt.id} className="p-4 rounded-2xl border border-default bg-surface hover:border-active transition-colors group">
+              <div className="flex justify-between items-start mb-2">
+                <h3 className="heading-sm">{prompt.title}</h3>
+                <Button
+                  variant="ghost"
+                  color="danger"
+                  size="small"
                   onClick={() => handleDelete(prompt.id)}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    color: '#ef4444',
-                    cursor: 'pointer',
-                    fontSize: '0.9rem'
-                  }}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity"
                 >
                   Delete
-                </button>
+                </Button>
               </div>
-              <pre style={{
-                whiteSpace: 'pre-wrap',
-                backgroundColor: '#f9f9f9',
-                padding: '0.5rem',
-                borderRadius: '4px',
-                fontSize: '0.9rem',
-                margin: 0,
-                fontFamily: 'monospace'
-              }}>
+              <pre className="whitespace-pre-wrap text-sm text-secondary bg-surface-tertiary p-3 rounded-lg font-mono overflow-x-auto">
                 {prompt.content}
               </pre>
             </div>
